@@ -81,6 +81,12 @@ static void RobotTest::informationControlledTests() {
   Serial.println(F("M: Teste de Frente com tempo"));
   Serial.println(F("N: Teste de Roda Esquerda"));
   Serial.println(F("O: Teste de Roda Direita"));
+  Serial.println(F("P: Teste de Calibração Diagonal Esquerda"));
+  Serial.println(F("Q: Teste de Calibração Diagonal Direita"));
+  Serial.println(F("R: Teste de Calibração Esquerda"));
+  Serial.println(F("S: Teste de Calibração Direita"));
+  Serial.println(F("T: Teste de Calibração Diagonal Esquerda Ré"));
+  Serial.println(F("U: Teste de Calibração Diagonal Direita Ré"));
 
   FeedbackHelper::playSuccessMelody();
 }
@@ -117,6 +123,12 @@ void RobotTest::runControlledTests() {
       case 'M': testForwardTiming(); break;
       case 'N': testLeftMotorPWM(); break;
       case 'O': testRightMotorPWM(); break;
+      case 'P': testDiagonalLeftCalibrate(); break;
+      case 'Q': testDiagonalRightCalibrate(); break;
+      case 'R': testLeftCalibrate(); break;
+      case 'S': testRightCalibrate(); break;
+      case 'T': testDiagonalLeftBackCalibrate(); break;
+      case 'U': testDiagonalRightBackCalibrate(); break;
 
       default:
         Serial.println(F("Comando inválido."));
@@ -489,6 +501,81 @@ void RobotTest::testCurveRight() {
     mc->stopAll();
     delay(pauseBetweenTests);
   }
+}
+
+void RobotTest::testDiagonalLeftCalibrate() {
+  Serial.println(F("\n--- Testando: Curva Aberta à Esquerda ---"));
+  
+
+    buzzer->beep(200);
+    mc->move(FRONT_LEFT, FORWARD, 130);
+    mc->move(FRONT_RIGHT, FORWARD, 255);
+    delay(800);
+    mc->stopAll();
+    delay(pauseBetweenTests);
+  
+}
+
+void RobotTest::testDiagonalRightCalibrate() {
+  Serial.println(F("\n--- Testando: Curva Aberta à Direita ---"));
+ 
+
+    buzzer->beep(200);
+    mc->move(FRONT_LEFT, FORWARD, 255);
+    mc->move(FRONT_RIGHT, FORWARD, 110);
+    delay(800);
+    mc->stopAll();
+    delay(pauseBetweenTests);
+  
+}
+
+void RobotTest::testLeftCalibrate() {
+  Serial.println(F("\n--- Testando: Curva à Esquerda ---"));
+  
+
+    buzzer->beep(200);
+    mc->move(FRONT_LEFT, STOP,100);
+    mc->move(FRONT_RIGHT, FORWARD, 170);
+    delay(335);
+    mc->stopAll();
+    delay(pauseBetweenTests);
+  
+}
+
+void RobotTest::testRightCalibrate() {
+  Serial.println(F("\n--- Testando: Curva à Direita ---"));
+  
+    buzzer->beep(200);
+    mc->move(FRONT_LEFT, FORWARD, 235);
+    mc->move(FRONT_RIGHT, STOP, 100);
+    delay(325);
+    mc->stopAll();
+    delay(pauseBetweenTests);
+  
+}
+
+void RobotTest::testDiagonalLeftBackCalibrate() {
+  Serial.println(F("\n--- Testando: Curva Aberta de Ré à Esquerda ---"));
+  
+  buzzer->beep(200);
+  mc->move(FRONT_LEFT, BACKWARD, 130);
+  mc->move(FRONT_RIGHT, BACKWARD, 245);
+  delay(800);
+  mc->stopAll();
+  delay(pauseBetweenTests);
+  
+}
+
+void RobotTest::testDiagonalRightBackCalibrate() {
+  Serial.println(F("\n--- Testando: Curva Aberta de Ré à Direita ---"));
+
+  buzzer->beep(200);
+  mc->move(FRONT_LEFT, BACKWARD, 255);
+  mc->move(FRONT_RIGHT, BACKWARD, 105);
+  delay(800);
+  mc->stopAll();
+  delay(pauseBetweenTests);
+  
 }
 
 void RobotTest::testUltrasonicDistance() {

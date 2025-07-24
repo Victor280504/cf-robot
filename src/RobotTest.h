@@ -32,6 +32,13 @@ private:
   void testForwardCalibrate();
   void testForwardCalibrateM1();
 
+  void testDiagonalLeftCalibrate(); 
+  void testDiagonalRightCalibrate(); 
+  void testLeftCalibrate(); 
+  void testRightCalibrate(); 
+  void testDiagonalLeftBackCalibrate();
+  void testDiagonalRightBackCalibrate();
+
   // PWM
   void testForwardBoth();
   void testBackwardBoth();

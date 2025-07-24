@@ -17,15 +17,24 @@
 enum ROBOT_MODE {
   BLUETOOTH,
   AUTONOMOUS,
+  CONTROLED_ACTIONS,
 };
 
-// enum ROBOT_ACTIONS {
-//   LEFT,
-//   RIGHT,
-//   FORWARD,
-//   BACKWARD,
-  
-// };
+enum ROBOT_ACTIONS {
+  R_LEFT,
+  R_RIGHT,
+  R_FORWARD,
+  R_BACKWARD,
+  R_STOP,
+  R_DIAGONAL_LEFT,
+  R_DIAGONAL_RIGHT,
+  R_BACK_DIAGONAL_LEFT,
+  R_BACK_DIAGONAL_RIGHT,
+  R_TURN_AROUND_LEFT,
+  R_TURN_AROUND_RIGHT,
+  R_TURN_PI_LEFT,
+  R_TURN_PI_RIGHT,
+};
 
 class Robot {
 private:
@@ -46,12 +55,14 @@ private:
   // === Settings ===
   RobotTest robotTesting;
   FeedbackManager feedback;
+  Event controledFunction;
 
   const float OBSTACLE_DISTANCE_CM = 25;
   const int MAX_ATTEMPTS = 3;
 
   int noActionCount = 0;
   bool bluetoothConnected = false;
+  bool controlMode = false;
 
   static ROBOT_MODE robotMode;
   static bool testModeIsActive;
@@ -61,10 +72,22 @@ private:
 
   void defineCallbacks();
   void handleNoEscape();
-  int decideEscapeDirection();
-  float measureDistanceAtAngle(int angle, int delayMs = 800);
-
-public:
+  
+  void backward();
+  void forward();
+  void left();
+  void right();
+  void stop();
+  void diagonalLeft();
+  void diagonalRight();
+  void backDiagonalLeft();
+  void backDiagonalRight();
+  void turnAroundLeft();
+  void turnAroundRight();
+  void turnPILeft();
+  void turnPIRight();
+  
+  public:
   static void changeRobotMode();
   Robot(
     uint8_t leftMotorPins[3],
@@ -79,6 +102,32 @@ public:
   void runAutonomousMode();
   void runBluetoothMode();
   void checkBluetoothConnection();
+  void setControlMode(bool mode) {
+    controlMode = mode;
+  }
+  void setControlledFunction(Event::Callback cb){
+    controledFunction.setCallback(cb);
+  }
+  void setMove(ROBOT_ACTIONS action) {
+    switch (action) {
+      case R_FORWARD: forward(); break;
+      case R_BACKWARD: backward(); break;
+      case R_LEFT: left(); break;
+      case R_RIGHT: right(); break;
+      case R_DIAGONAL_LEFT: diagonalLeft(); break;
+      case R_DIAGONAL_RIGHT: diagonalRight(); break;
+      case R_BACK_DIAGONAL_LEFT: backDiagonalLeft(); break;
+      case R_BACK_DIAGONAL_RIGHT: backDiagonalRight(); break;
+      case R_TURN_AROUND_LEFT: turnAroundLeft(); break;
+      case R_TURN_AROUND_RIGHT: turnAroundRight(); break;
+      case R_STOP: stop(); break;
+      case R_TURN_PI_LEFT: turnPILeft(); break;
+      case R_TURN_PI_RIGHT: turnPIRight(); break;
+      default: mc.stopAll(); break;
+    }
+  }
+  ROBOT_ACTIONS decideEscapeDirection();
+  float measureDistanceAtAngle(int angle, int delayMs = 800);
 };
 
 #endif
