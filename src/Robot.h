@@ -61,6 +61,8 @@ private:
   const int MAX_ATTEMPTS = 3;
 
   int noActionCount = 0;
+  unsigned long forwardStartTime = 0;
+  bool isMovingForward = false;
   bool bluetoothConnected = false;
   bool controlMode = false;
 

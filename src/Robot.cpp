@@ -3,7 +3,7 @@
 
 ROBOT_MODE Robot::robotMode = BLUETOOTH;
 bool Robot::testModeIsActive = false;
-FeedbackManager* FeedbackHelper::feedback = nullptr;
+FeedbackManager *FeedbackHelper::feedback = nullptr;
 
 static unsigned long lastInterruptTime = 0;
 volatile bool testModeChanged = false;
@@ -187,7 +187,7 @@ void Robot::handleNoEscape()
   delay(300);
 
   Serial.println(F("Girando 180 graus..."));
-  turnPILeft();
+  backDiagonalRight();
   delay(500);
   stop();
   delay(300);
@@ -207,7 +207,7 @@ void Robot::handleNoEscape()
   {
     Serial.println(F("Ainda bloqueado. Parando."));
     FeedbackHelper::playErrorMelody();
-    turnAroundLeft();
+    turnAroundRight();
     Serial.println(F("Rodando aleatóriamente..."));
     delay(2000);
     stop();
@@ -241,6 +241,8 @@ void Robot::runAutonomousMode()
       left();
       delay(500);
       noActionCount = 0;
+      forwardStartTime = 0;
+      isMovingForward = false;
       break;
     case R_RIGHT:
       Serial.println(F("Desviando para direita."));
@@ -248,16 +250,20 @@ void Robot::runAutonomousMode()
       right();
       delay(500);
       noActionCount = 0;
+      forwardStartTime = 0;
+      isMovingForward = false;
       break;
     case R_FORWARD:
       Serial.println(F("Indo para frente."));
       FeedbackHelper::playStartMelody();
-      mc.moveAll(FORWARD, 160);
-      delay(400);
-      noActionCount = 0;
+      forwardStartTime = 0;
+      isMovingForward = false;
+      forward();
       break;
     default:
       noActionCount++;
+      forwardStartTime = 0;
+      isMovingForward = false;
       Serial.print(F("Tentativas sem sucesso: "));
       Serial.println(noActionCount);
 
@@ -282,8 +288,37 @@ void Robot::runAutonomousMode()
   }
   else
   {
-    forward();
+    mc.moveAll(FORWARD, 255);
     noActionCount = 0;
+
+    if (!isMovingForward)
+    {
+      isMovingForward = true;
+      forwardStartTime = millis(); // começa a cronometrar
+    }
+
+    // Verifica se passou tempo demais andando pra frente
+    if (isMovingForward && millis() - forwardStartTime > 10000)
+    {
+      Serial.println(F("Desconfiança: preso em linha reta por muito tempo!"));
+
+      stop();
+      delay(200);
+
+      Serial.println(F("Recuperando... Indo para trás."));
+      backward();
+      delay(500);
+      stop();
+
+      Serial.println(F("Girando 180 graus..."));
+      turnAroundRight();
+      delay(3000);
+      stop();
+
+      // Resetar controle
+      isMovingForward = false;
+      forwardStartTime = 0;
+    }
   }
 }
 
@@ -369,8 +404,8 @@ void Robot::backward()
 };
 void Robot::forward()
 {
-  mc.move( FRONT_LEFT,FORWARD,  constrain(200, 105, 255));
-  mc.move( FRONT_RIGHT,FORWARD, constrain(200, 81, 255));
+  mc.move(FRONT_LEFT, FORWARD, constrain(200, 105, 255));
+  mc.move(FRONT_RIGHT, FORWARD, constrain(200, 81, 255));
   delay(300);
 };
 void Robot::left()
